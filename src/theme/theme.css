@@ -1,0 +1,12 @@
+:root {
+   --ion-toolbar-background: var(--ion-color-primary);
+   --ion-tab-bar-background: var(--ion-color-primary);
+   --ion-tab-bar-color-selected: var(--ion-color-secondary);
+}
+@media (prefers-color-scheme: dark) {
+   .md body {
+      --ion-toolbar-background: var(--ion-color-primary);
+      --ion-tab-bar-background: var(--ion-color-primary);
+      --ion-tab-bar-color-selected: var(--ion-color-secondary);
+   }
+}

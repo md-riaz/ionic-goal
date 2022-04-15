@@ -9,7 +9,12 @@ import {
    IonList,
    IonItem,
    IonLabel,
+   IonItemSliding,
+   IonItemOptions,
+   IonItemOption,
+   IonIcon,
 } from '@ionic/react';
+import { create, trash } from 'ionicons/icons';
 import React from 'react';
 import { useParams } from 'react-router';
 import { COURSE_DATA } from './Courses';
@@ -17,6 +22,14 @@ import { COURSE_DATA } from './Courses';
 export const CourseGoals: React.FC<{}> = () => {
    const { courseId } = useParams<{ courseId: string }>();
    const selectedCourse = COURSE_DATA.find((course) => course.id === courseId);
+
+   const deleteGoalHandler = () => {
+      console.log('Deleting goal:');
+   };
+
+   const startEditGoalHandler = (event: React.MouseEvent) => {
+      event.stopPropagation();
+   };
 
    return (
       <IonPage>
@@ -34,9 +47,29 @@ export const CourseGoals: React.FC<{}> = () => {
             <IonList>
                {selectedCourse &&
                   selectedCourse.goals.map((goal) => (
-                     <IonItem key={goal.id} lines='full'>
-                        <IonLabel>{goal.text}</IonLabel>
-                     </IonItem>
+                     <IonItemSliding key={goal.id}>
+                        <IonItemOptions
+                           side='start'
+                           onClick={deleteGoalHandler}
+                        >
+                           <IonItemOption color='danger'>
+                              <IonIcon icon={trash} slot='icon-only' />
+                           </IonItemOption>
+                        </IonItemOptions>
+
+                        <IonItem lines='full'>
+                           <IonLabel>{goal.text}</IonLabel>
+                        </IonItem>
+
+                        <IonItemOptions
+                           side='end'
+                           onClick={startEditGoalHandler}
+                        >
+                           <IonItemOption>
+                              <IonIcon icon={create} slot='icon-only' />
+                           </IonItemOption>
+                        </IonItemOptions>
+                     </IonItemSliding>
                   ))}
             </IonList>
          </IonContent>

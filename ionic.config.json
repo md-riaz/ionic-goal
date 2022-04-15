@@ -1,0 +1,7 @@
+{
+  "name": "ionic-goal",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

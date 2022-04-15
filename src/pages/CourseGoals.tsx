@@ -13,8 +13,12 @@ import {
    IonItemOptions,
    IonItemOption,
    IonIcon,
+   IonButton,
+   IonFab,
+   IonFabButton,
+   isPlatform,
 } from '@ionic/react';
-import { create, trash } from 'ionicons/icons';
+import { addOutline, create, trash } from 'ionicons/icons';
 import React from 'react';
 import { useParams } from 'react-router';
 import { COURSE_DATA } from './Courses';
@@ -27,6 +31,10 @@ export const CourseGoals: React.FC<{}> = () => {
       console.log('Deleting goal:');
    };
 
+   const startAddGaolHandler = () => {
+      console.log('Start adding goal');
+   };
+
    const startEditGoalHandler = (event: React.MouseEvent) => {
       event.stopPropagation();
    };
@@ -36,17 +44,24 @@ export const CourseGoals: React.FC<{}> = () => {
          <IonHeader>
             <IonToolbar>
                <IonButtons slot='start'>
-                  <IonBackButton defaultHref='/' />
+                  <IonBackButton defaultHref='/courses/list' />
                </IonButtons>
                <IonTitle>
                   {selectedCourse ? selectedCourse.title : 'No course found!'}
                </IonTitle>
+               {!isPlatform('android') && (
+                  <IonButtons slot='end'>
+                     <IonButton onClick={startAddGaolHandler}>
+                        <IonIcon slot='icon-only' icon={addOutline} />
+                     </IonButton>
+                  </IonButtons>
+               )}
             </IonToolbar>
          </IonHeader>
          <IonContent>
-            <IonList>
-               {selectedCourse &&
-                  selectedCourse.goals.map((goal) => (
+            {selectedCourse && (
+               <IonList>
+                  {selectedCourse.goals.map((goal) => (
                      <IonItemSliding key={goal.id}>
                         <IonItemOptions
                            side='start'
@@ -71,7 +86,16 @@ export const CourseGoals: React.FC<{}> = () => {
                         </IonItemOptions>
                      </IonItemSliding>
                   ))}
-            </IonList>
+               </IonList>
+            )}
+
+            {isPlatform('android') && (
+               <IonFab horizontal='end' vertical='bottom' slot='fixed'>
+                  <IonFabButton color='secondary' onClick={startAddGaolHandler}>
+                     <IonIcon icon={addOutline} />
+                  </IonFabButton>
+               </IonFab>
+            )}
          </IonContent>
       </IonPage>
    );

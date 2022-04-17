@@ -39,12 +39,13 @@ export const AddCourseModal: React.FC<{
                <IonRow>
                   <IonCol>
                      <IonItem>
-                        <IonLabel>Enrollment Date</IonLabel>
                         <IonDatetime
                            firstDayOfWeek={1}
                            locale='en-US'
                            presentation='date'
-                        />
+                        >
+                           <IonLabel slot='title'>Enrollment Date</IonLabel>
+                        </IonDatetime>
                      </IonItem>
                   </IonCol>
                </IonRow>

@@ -19,7 +19,8 @@ import React, { useRef, useState } from 'react';
 export const AddCourseModal: React.FC<{
    show: boolean;
    onCancel: () => void;
-}> = ({ show, onCancel }) => {
+   onSave: (title: string, date: Date) => void;
+}> = ({ show, onCancel, onSave }) => {
    const titleRef = useRef<HTMLIonInputElement>(null);
    const dateRef = useRef<HTMLIonDatetimeElement>(null);
 
@@ -40,6 +41,8 @@ export const AddCourseModal: React.FC<{
       }
 
       setError('');
+
+      onSave(enteredTitle.toString(), new Date(enteredDate));
    };
 
    return (

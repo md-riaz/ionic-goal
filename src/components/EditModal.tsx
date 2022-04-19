@@ -11,14 +11,30 @@ import {
    IonInput,
    IonItem,
    IonLabel,
+   IonText,
 } from '@ionic/react';
-import React from 'react';
+import React, { useRef, useState } from 'react';
 
 export const EditModal: React.FC<{
    show: boolean;
    onCancel: () => void;
+   onSave: (goalText: string) => void;
    editedGoal: { id: string; text: string } | null;
-}> = ({ show, onCancel, editedGoal }) => {
+}> = ({ show, onCancel, onSave, editedGoal }) => {
+   const textRef = useRef<HTMLIonInputElement>(null);
+
+   const [error, setError] = useState('');
+
+   const saveHandler = () => {
+      const enteredText = textRef.current!.value;
+
+      if (!enteredText || enteredText.toString().trim().length === 0) {
+         setError('Please enter a valid text');
+         return;
+      }
+      onSave(enteredText.toString());
+   };
+
    return (
       <IonModal isOpen={show}>
          <IonHeader>
@@ -32,10 +48,23 @@ export const EditModal: React.FC<{
                   <IonCol>
                      <IonItem>
                         <IonLabel position='floating'>Your Goal</IonLabel>
-                        <IonInput type='text' value={editedGoal?.text} />
+                        <IonInput
+                           type='text'
+                           value={editedGoal?.text}
+                           ref={textRef}
+                        />
                      </IonItem>
                   </IonCol>
                </IonRow>
+               {error && (
+                  <IonRow>
+                     <IonCol>
+                        <IonText color='danger'>
+                           <p>{error}</p>
+                        </IonText>
+                     </IonCol>
+                  </IonRow>
+               )}
                <IonRow className='ion-text-center'>
                   <IonCol>
                      <IonButton color='medium' fill='clear' onClick={onCancel}>
@@ -47,9 +76,7 @@ export const EditModal: React.FC<{
                      <IonButton
                         color='secondary'
                         expand='block'
-                        onClick={() => {
-                           console.log();
-                        }}
+                        onClick={saveHandler}
                      >
                         Save
                      </IonButton>

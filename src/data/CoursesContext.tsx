@@ -15,7 +15,7 @@ interface Course {
 interface Context {
    courses: Course[];
    addCourse: (courseTitle: string, courseDate: Date) => void;
-   addGoal: () => void;
+   addGoal: (courseId: string, text: string) => void;
    deleteCourse: () => void;
    updateCourse: () => void;
 }
@@ -29,7 +29,14 @@ export const CoursesContext = React.createContext<Context>({
 });
 
 export const CoursesContextProvider: React.FC<{}> = (props) => {
-   const [courses, setCourses] = useState<Course[]>([]);
+   const [courses, setCourses] = useState<Course[]>([
+      {
+         id: 'c1',
+         title: 'Course 1',
+         enrolled: new Date(),
+         goals: [],
+      },
+   ]);
 
    const addCourse = (title: string, date: Date) => {
       const newCourse: Course = {
@@ -42,16 +49,31 @@ export const CoursesContextProvider: React.FC<{}> = (props) => {
       setCourses((prevCourses) => prevCourses.concat(newCourse));
    };
 
-   const addGoal = () => {};
+   const addGoal = (courseId: string, text: string) => {
+      const newGoal: Goal = {
+         id: Math.random().toString(),
+         text,
+      };
+      setCourses((prevCourses) => {
+         const updatedCourses = [...prevCourses];
+
+         const updatedCourseIndex = prevCourses.findIndex((course) => course.id === courseId);
+         const updatedCourseGoals = updatedCourses[updatedCourseIndex].goals.concat(newGoal);
+         const updatedCourse = { ...updatedCourses[updatedCourseIndex] };
+
+         updatedCourse.goals = updatedCourseGoals;
+         updatedCourses[updatedCourseIndex] = updatedCourse;
+
+         return updatedCourses;
+      });
+   };
 
    const deleteCourse = () => {};
 
    const updateCourse = () => {};
 
    return (
-      <CoursesContext.Provider
-         value={{ courses, addCourse, addGoal, deleteCourse, updateCourse }}
-      >
+      <CoursesContext.Provider value={{ courses, addCourse, addGoal, deleteCourse, updateCourse }}>
          {props.children}
       </CoursesContext.Provider>
    );

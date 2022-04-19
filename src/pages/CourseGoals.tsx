@@ -16,11 +16,11 @@ import {
    IonToast,
 } from '@ionic/react';
 import { addOutline } from 'ionicons/icons';
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { EditableGoalItem } from '../components/EditableGoalItem';
 import { EditModal } from '../components/EditModal';
-import { COURSE_DATA } from './Courses';
+import { CoursesContext } from '../data/CoursesContext';
 
 export const CourseGoals: React.FC<{}> = () => {
    const [startedDeleting, setStartedDeleting] = useState(false);
@@ -35,7 +35,11 @@ export const CourseGoals: React.FC<{}> = () => {
    const sliddingOptionsRef = useRef<HTMLIonItemSlidingElement>(null);
 
    const { courseId } = useParams<{ courseId: string }>();
-   const selectedCourse = COURSE_DATA.find((course) => course.id === courseId);
+   const coursesCtx = useContext(CoursesContext);
+
+   const selectedCourse = coursesCtx.courses.find(
+      (course) => course.id === courseId
+   );
 
    const startDeleteGoalHandler = () => {
       setStartedDeleting(true);
@@ -70,11 +74,17 @@ export const CourseGoals: React.FC<{}> = () => {
       setSelectedGoal(null);
    };
 
+   const addGoalHandler = (goal: string) => {
+      coursesCtx.addGoal(courseId, goal);
+      setIsEditing(false);
+   };
+
    return (
       <React.Fragment>
          <EditModal
             show={isEditing}
             onCancel={cancelEditGoalHandler}
+            onSave={addGoalHandler}
             editedGoal={selectedGoal}
          />
          <IonToast

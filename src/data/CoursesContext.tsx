@@ -16,16 +16,16 @@ interface Context {
    courses: Course[];
    addCourse: (courseTitle: string, courseDate: Date) => void;
    addGoal: (courseId: string, text: string) => void;
-   deleteCourse: () => void;
-   updateCourse: () => void;
+   deleteGoal: (courseId: string, goalId: string) => void;
+   updateGoal: (courseId: string, goalId: string, newText: string) => void;
 }
 
 export const CoursesContext = React.createContext<Context>({
    courses: [],
    addCourse: () => {},
    addGoal: () => {},
-   deleteCourse: () => {},
-   updateCourse: () => {},
+   deleteGoal: () => {},
+   updateGoal: () => {},
 });
 
 export const CoursesContextProvider: React.FC<{}> = (props) => {
@@ -68,12 +68,42 @@ export const CoursesContextProvider: React.FC<{}> = (props) => {
       });
    };
 
-   const deleteCourse = () => {};
+   const deleteGoal = (courseId: string, goalId: string) => {
+      setCourses((prevCourses) => {
+         const updatedCourses = [...prevCourses];
 
-   const updateCourse = () => {};
+         const updatedCourseIndex = prevCourses.findIndex((course) => course.id === courseId);
+         const updatedCourseGoals = updatedCourses[updatedCourseIndex].goals.filter((goal) => goal.id !== goalId);
+         const updatedCourse = { ...updatedCourses[updatedCourseIndex] };
+
+         updatedCourse.goals = updatedCourseGoals;
+         updatedCourses[updatedCourseIndex] = updatedCourse;
+
+         return updatedCourses;
+      });
+   };
+
+   const updateGoal = (courseId: string, goalId: string, newText: string) => {
+      setCourses((prevCourses) => {
+         const updatedCourses = [...prevCourses];
+
+         const updatedCourseIndex = prevCourses.findIndex((course) => course.id === courseId);
+         const updatedCourseGoals = updatedCourses[updatedCourseIndex].goals.slice();
+         const updatedCourseGoalIndex = updatedCourseGoals.findIndex((goal) => goal.id === goalId);
+         const updatedGoal = { ...updatedCourseGoals[updatedCourseGoalIndex], text: newText };
+         updatedCourseGoals[updatedCourseGoalIndex] = updatedGoal;
+
+         const updatedCourse = { ...updatedCourses[updatedCourseIndex] };
+
+         updatedCourse.goals = updatedCourseGoals;
+         updatedCourses[updatedCourseIndex] = updatedCourse;
+
+         return updatedCourses;
+      });
+   };
 
    return (
-      <CoursesContext.Provider value={{ courses, addCourse, addGoal, deleteCourse, updateCourse }}>
+      <CoursesContext.Provider value={{ courses, addCourse, addGoal, deleteGoal: deleteGoal, updateGoal: updateGoal }}>
          {props.children}
       </CoursesContext.Provider>
    );

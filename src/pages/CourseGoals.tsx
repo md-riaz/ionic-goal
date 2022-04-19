@@ -33,20 +33,22 @@ export const CourseGoals: React.FC<{}> = () => {
    } | null>(null);
 
    const sliddingOptionsRef = useRef<HTMLIonItemSlidingElement>(null);
+   const selectedGoalIdRef = useRef<string | null>(null);
 
    const { courseId } = useParams<{ courseId: string }>();
    const coursesCtx = useContext(CoursesContext);
 
-   const selectedCourse = coursesCtx.courses.find(
-      (course) => course.id === courseId
-   );
+   const selectedCourse = coursesCtx.courses.find((course) => course.id === courseId);
 
-   const startDeleteGoalHandler = () => {
+   const startDeleteGoalHandler = (goalId: string) => {
       setStartedDeleting(true);
+      selectedGoalIdRef.current = goalId;
    };
 
    const deleteGaolHandler = () => {
       setStartedDeleting(false);
+      coursesCtx.deleteGoal(courseId, selectedGoalIdRef.current!);
+
       setToastMessage('Goal deleted!');
    };
 
@@ -74,8 +76,14 @@ export const CourseGoals: React.FC<{}> = () => {
       setSelectedGoal(null);
    };
 
-   const addGoalHandler = (goal: string) => {
-      coursesCtx.addGoal(courseId, goal);
+   const saveGoalHandler = (goal: string) => {
+      if (selectedGoal) {
+         coursesCtx.updateGoal(courseId, selectedGoal.id, goal);
+         setToastMessage('Goal updated!');
+      } else {
+         coursesCtx.addGoal(courseId, goal);
+      }
+
       setIsEditing(false);
    };
 
@@ -84,7 +92,7 @@ export const CourseGoals: React.FC<{}> = () => {
          <EditModal
             show={isEditing}
             onCancel={cancelEditGoalHandler}
-            onSave={addGoalHandler}
+            onSave={saveGoalHandler}
             editedGoal={selectedGoal}
          />
          <IonToast
@@ -107,7 +115,7 @@ export const CourseGoals: React.FC<{}> = () => {
                },
                {
                   text: 'Yes',
-                  handler: deleteGaolHandler,
+                  handler: deleteGaolHandler.bind(null, selectedGoal?.id),
                },
             ]}
          />
@@ -117,11 +125,7 @@ export const CourseGoals: React.FC<{}> = () => {
                   <IonButtons slot='start'>
                      <IonBackButton defaultHref='/courses/list' />
                   </IonButtons>
-                  <IonTitle>
-                     {selectedCourse
-                        ? selectedCourse.title
-                        : 'No course found!'}
-                  </IonTitle>
+                  <IonTitle>{selectedCourse ? selectedCourse.title : 'No course found!'}</IonTitle>
                   {!isPlatform('android') && (
                      <IonButtons slot='end'>
                         <IonButton onClick={startAddGaolHandler}>
@@ -139,11 +143,8 @@ export const CourseGoals: React.FC<{}> = () => {
                            key={goal.id}
                            slidingRef={sliddingOptionsRef}
                            text={goal.text}
-                           onStartDelete={startDeleteGoalHandler}
-                           onStartEdit={startEditGoalHandler.bind(
-                              null,
-                              goal.id
-                           )}
+                           onStartDelete={startDeleteGoalHandler.bind(null, goal.id)}
+                           onStartEdit={startEditGoalHandler.bind(null, goal.id)}
                         />
                      ))}
                   </IonList>
@@ -151,10 +152,7 @@ export const CourseGoals: React.FC<{}> = () => {
 
                {isPlatform('android') && (
                   <IonFab horizontal='end' vertical='bottom' slot='fixed'>
-                     <IonFabButton
-                        color='secondary'
-                        onClick={startAddGaolHandler}
-                     >
+                     <IonFabButton color='secondary' onClick={startAddGaolHandler}>
                         <IonIcon icon={addOutline} />
                      </IonFabButton>
                   </IonFab>
